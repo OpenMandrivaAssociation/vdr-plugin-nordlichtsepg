@@ -2,7 +2,7 @@
 %define plugin	nordlichtsepg
 %define name	vdr-plugin-%plugin
 %define version	0.8a
-%define rel	7
+%define rel	8
 
 Summary:	VDR plugin: Extended EPG
 Name:		%name
