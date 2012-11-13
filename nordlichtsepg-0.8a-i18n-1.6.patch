@@ -1,0 +1,705 @@
+
+This is a semi-automatically created i18n adaptation patch and may contain
+errors (such as missing translations). This should only be used as a
+temporary measure until the upstream plugin maintainer fixes the plugin
+properly according to the instructions in i18n-to-gettext.pl.
+
+Created for Mandriva Linux packaging by Anssi Hannula <anssi@mandriva.org>.
+
+
+Index: nordlichtsepg-0.8a/Makefile
+===================================================================
+--- nordlichtsepg-0.8a/Makefile
++++ nordlichtsepg-0.8a/Makefile	2008-04-24 21:29:46.000000000 +0300
+@@ -46,7 +46,7 @@
+ 
+ ### The object files (add further files here):
+ 
+-OBJS = $(PLUGIN).o mywhatsonitem.o mymenuevent.o i18n.o patchfont.o
++OBJS = $(PLUGIN).o mywhatsonitem.o mymenuevent.o  patchfont.o
+ 
+ ### Implicit rules:
+ 
+@@ -62,9 +62,34 @@
+ 
+ -include $(DEPFILE)
+ 
++### Internationalization (I18N):
++
++PODIR     = po
++LOCALEDIR = $(VDRDIR)/locale
++I18Npo    = $(wildcard $(PODIR)/*.po)
++I18Nmsgs  = $(addprefix $(LOCALEDIR)/, $(addsuffix /LC_MESSAGES/vdr-$(PLUGIN).mo, $(notdir $(foreach file, $(I18Npo), $(basename $(file))))))
++I18Npot   = $(PODIR)/$(PLUGIN).pot
++
++%.mo: %.po
++	msgfmt -c -o $@ $<
++
++$(I18Npot): $(wildcard *.[ch] *.[ch]xx *.cc *.[ch]pp *.hh)
++	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address='<http://qa.mandriva.com/>' -o $@ $^
++
++%.po: $(I18Npot)
++	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
++	@touch $@
++
++$(I18Nmsgs): $(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.mo
++	@mkdir -p $(dir $@)
++	cp $< $@
++
++.PHONY: i18n
++i18n: $(I18Nmsgs)
++
+ ### Targets:
+ 
+-all: libvdr-$(PLUGIN).so
++all: libvdr-$(PLUGIN).so i18n
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+@@ -79,4 +104,5 @@
+ 	@echo Distribution package created as $(PACKAGE).tgz
+ 
+ clean:
++	@-rm -f $(PODIR)/*.mo $(PODIR)/*.pot
+ 	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~
+Index: nordlichtsepg-0.8a/i18n.c
+===================================================================
+--- nordlichtsepg-0.8a/i18n.c
++++ nordlichtsepg-0.8a/i18n.c	2008-04-24 21:29:46.000000000 +0300
+@@ -1,209 +0,0 @@
+-/*
+- * See the README file for copyright information and how to reach the author.
+- */
+-
+-#include "i18n.h"
+-
+-const tI18nPhrase Phrases[] = {
+-  { "Nordlicht's EPG",
+-    "Nordlicht's EPG",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Nordlichtin ohjelmaopas",
+-  },
+-  { "Extended EPG",
+-    "Erweitertes EPG",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Laajennettu ohjelmaopas",
+-  },
+-  { "Hide main menu entry",
+-    "Eintrag im Hauptmenü verstecken",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Piilota valinta päävalikosta",
+-  },
+-  { "Step width (min)",
+-    "Sprungweite (min)",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Aikasiirtymän pituus (min)",
+-  },
+-  { "Jump to",
+-    "Springe zu",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Pikavalinta kellonaikaan",
+-  },
+-  { "Keep display after switching",
+-    "Anzeige nicht beenden nach Umschalten",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Säilytä valikko kanavaa valittaessa",
+-  },
+-  { "no info",
+-    "keine Info",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "ei tietoja",
+-  },
+-  { "Show channel groups",
+-    "Kanalgruppen anzeigen",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Näytä kanavaryhmät",
+-  },
+-  { "Hide encrypted channels",
+-    "Verschlüsselte Kanäle ausblenden",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Piilota salatut kanavat",
+-  },
+-  { "Is Enigma theme used",
+-    "Wird Enigma-Theme benutzt",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Enigma-teema käytössä",
+-  },
+-  { "Show channel numbers",
+-    "Kanalnummern anzeigen",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Näytä kanavien numerointi",
+-  },
+-  { "Appearance",
+-    "Erscheinungsbild",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Ulkoasu",
+-  },
+-  { "Hide radio channels",
+-    "Radio-Kanäle ausblenden",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Piilota radiokanavat",
+-  },
+-  { "Button$Info",
+-    "Info",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Tiedot",
+-  },
+-  { "Switch with Ok",
+-    "Mit Ok umschalten",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Vaihda kanavaa 'OK'-painikkeella",
+-  },
+-  { "Button$Edit T.",
+-    "T. editieren",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Muokkaa aj.",
+-  },
+-  { "Button$Delete T.",
+-    "T. löschen",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Poista aj.",
+-  },
+-  { "Button$Now",
+-    "Jetzt",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Nyt",
+-  },
+-  { "Button$Switch",
+-    "Umschalten",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Valitse",
+-  },
+-  { "Button$Record",
+-    "Aufnehmen",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Tallenna",
+-  },
+-  { NULL }
+-  };
+Index: nordlichtsepg-0.8a/i18n.h
+===================================================================
+--- nordlichtsepg-0.8a/i18n.h
++++ nordlichtsepg-0.8a/i18n.h	2008-04-24 21:29:46.000000000 +0300
+@@ -1,12 +0,0 @@
+-/*
+- * See the README file for copyright information and how to reach the author.
+- */
+-
+-#ifndef _I18N__H
+-#define _I18N__H
+-
+-#include <vdr/i18n.h>
+-
+-extern const tI18nPhrase Phrases[];
+-
+-#endif //_I18N__H
+Index: nordlichtsepg-0.8a/nordlichtsepg.c
+===================================================================
+--- nordlichtsepg-0.8a/nordlichtsepg.c
++++ nordlichtsepg-0.8a/nordlichtsepg.c	2008-04-24 21:29:46.000000000 +0300
+@@ -9,8 +9,8 @@
+ #define CHNUMWIDTH (numdigits(Channels.MaxNumber()))
+ 
+ static const char *VERSION        = "0.8a";
+-static const char *DESCRIPTION    = "Extended EPG";
+-static const char *MAINMENUENTRY  = "Nordlicht's EPG";
++static const char *DESCRIPTION    = trNOOP("Extended EPG");
++static const char *MAINMENUENTRY  = trNOOP("Nordlicht's EPG");
+ 
+ // setup values
+ int hidemainmenu=false;
+@@ -400,7 +400,7 @@
+ 
+ bool cPluginNordlichtsepg::Initialize(void)
+ {
+- RegisterI18n(Phrases);
++ 
+  return true;
+ }
+ 
+Index: nordlichtsepg-0.8a/nordlichtsepg.h
+===================================================================
+--- nordlichtsepg-0.8a/nordlichtsepg.h
++++ nordlichtsepg-0.8a/nordlichtsepg.h	2008-04-24 21:29:46.000000000 +0300
+@@ -6,4 +6,4 @@
+ #include <vdr/menu.h>
+ #include <vdr/status.h>
+ #include <vdr/interface.h>
+-#include "i18n.h"
++
+Index: nordlichtsepg-0.8a/po/de_DE.po
+===================================================================
+--- nordlichtsepg-0.8a/po/de_DE.po
++++ nordlichtsepg-0.8a/po/de_DE.po	2008-04-24 21:29:46.000000000 +0300
+@@ -0,0 +1,120 @@
++# VDR nordlichtsepg plugin language source file.
++# Copyright (C) YEAR THE VDR-nordlichtsepg'S COPYRIGHT HOLDER
++# This file is distributed under the same license as the VDR-nordlichtsepg package.
++# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR-nordlichtsepg\n"
++"Report-Msgid-Bugs-To: http://qa.mandriva.com/\n"
++"POT-Creation-Date: 2008-04-24 21:29+0300\n"
++"PO-Revision-Date: 2008-04-24 21:29+0300\n"
++"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-15\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: mymenuevent.c:11
++msgid "Event"
++msgstr ""
++
++#: mymenuevent.c:20 mymenuevent.c:84
++msgid "Button$Delete T."
++msgstr "T. löschen"
++
++#: mymenuevent.c:20 mymenuevent.c:84
++msgid "Button$Edit T."
++msgstr "T. editieren"
++
++#: mymenuevent.c:20 mymenuevent.c:22 mymenuevent.c:84 mymenuevent.c:108
++#: nordlichtsepg.c:160
++msgid "Button$Switch"
++msgstr "Umschalten"
++
++#: mymenuevent.c:22 mymenuevent.c:108
++msgid "Button$Record"
++msgstr "Aufnehmen"
++
++#: mymenuevent.c:35 mywhatsonitem.c:70 mywhatsonitem.c:72 mywhatsonitem.c:77
++#: mywhatsonitem.c:79
++msgid "no info"
++msgstr "keine Info"
++
++#: mymenuevent.c:43 nordlichtsepg.c:174
++msgid "Can't switch channel!"
++msgstr ""
++
++#: mymenuevent.c:92
++msgid "Delete timer?"
++msgstr ""
++
++#: mymenuevent.c:96
++msgid "Timer still recording - really delete?"
++msgstr ""
++
++#: nordlichtsepg.c:12
++msgid "Extended EPG"
++msgstr "Erweitertes EPG"
++
++#: nordlichtsepg.c:13
++msgid "Nordlicht's EPG"
++msgstr "Nordlicht's EPG"
++
++#: nordlichtsepg.c:49
++msgid "Step width (min)"
++msgstr "Sprungweite (min)"
++
++#: nordlichtsepg.c:50 nordlichtsepg.c:228 nordlichtsepg.c:236
++#: nordlichtsepg.c:244 nordlichtsepg.c:250 nordlichtsepg.c:292
++#: nordlichtsepg.c:325
++msgid "Jump to"
++msgstr "Springe zu"
++
++#: nordlichtsepg.c:51
++msgid "Switch with Ok"
++msgstr "Mit Ok umschalten"
++
++#: nordlichtsepg.c:52
++msgid "Appearance"
++msgstr "Erscheinungsbild"
++
++#: nordlichtsepg.c:53
++msgid "Hide main menu entry"
++msgstr "Eintrag im Hauptmenü verstecken"
++
++#: nordlichtsepg.c:54
++msgid "Keep display after switching"
++msgstr "Anzeige nicht beenden nach Umschalten"
++
++#: nordlichtsepg.c:55
++msgid "Show channel numbers"
++msgstr "Kanalnummern anzeigen"
++
++#: nordlichtsepg.c:56
++msgid "Show channel groups"
++msgstr "Kanalgruppen anzeigen"
++
++#: nordlichtsepg.c:57
++msgid "Hide encrypted channels"
++msgstr "Verschlüsselte Kanäle ausblenden"
++
++#: nordlichtsepg.c:58
++msgid "Hide radio channels"
++msgstr "Radio-Kanäle ausblenden"
++
++#: nordlichtsepg.c:59
++msgid "Is Enigma theme used"
++msgstr "Wird Enigma-Theme benutzt"
++
++#: nordlichtsepg.c:155 nordlichtsepg.c:271
++msgid "What's on now?"
++msgstr ""
++
++#: nordlichtsepg.c:158
++msgid "Button$Info"
++msgstr "Info"
++
++#: nordlichtsepg.c:158 nordlichtsepg.c:160
++msgid "Button$Now"
++msgstr "Jetzt"
+Index: nordlichtsepg-0.8a/po/fi_FI.po
+===================================================================
+--- nordlichtsepg-0.8a/po/fi_FI.po
++++ nordlichtsepg-0.8a/po/fi_FI.po	2008-04-24 21:29:46.000000000 +0300
+@@ -0,0 +1,120 @@
++# VDR nordlichtsepg plugin language source file.
++# Copyright (C) YEAR THE VDR-nordlichtsepg'S COPYRIGHT HOLDER
++# This file is distributed under the same license as the VDR-nordlichtsepg package.
++# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR-nordlichtsepg\n"
++"Report-Msgid-Bugs-To: http://qa.mandriva.com/\n"
++"POT-Creation-Date: 2008-04-24 21:29+0300\n"
++"PO-Revision-Date: 2008-04-24 21:29+0300\n"
++"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-15\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: mymenuevent.c:11
++msgid "Event"
++msgstr ""
++
++#: mymenuevent.c:20 mymenuevent.c:84
++msgid "Button$Delete T."
++msgstr "Poista aj."
++
++#: mymenuevent.c:20 mymenuevent.c:84
++msgid "Button$Edit T."
++msgstr "Muokkaa aj."
++
++#: mymenuevent.c:20 mymenuevent.c:22 mymenuevent.c:84 mymenuevent.c:108
++#: nordlichtsepg.c:160
++msgid "Button$Switch"
++msgstr "Valitse"
++
++#: mymenuevent.c:22 mymenuevent.c:108
++msgid "Button$Record"
++msgstr "Tallenna"
++
++#: mymenuevent.c:35 mywhatsonitem.c:70 mywhatsonitem.c:72 mywhatsonitem.c:77
++#: mywhatsonitem.c:79
++msgid "no info"
++msgstr "ei tietoja"
++
++#: mymenuevent.c:43 nordlichtsepg.c:174
++msgid "Can't switch channel!"
++msgstr ""
++
++#: mymenuevent.c:92
++msgid "Delete timer?"
++msgstr ""
++
++#: mymenuevent.c:96
++msgid "Timer still recording - really delete?"
++msgstr ""
++
++#: nordlichtsepg.c:12
++msgid "Extended EPG"
++msgstr "Laajennettu ohjelmaopas"
++
++#: nordlichtsepg.c:13
++msgid "Nordlicht's EPG"
++msgstr "Nordlichtin ohjelmaopas"
++
++#: nordlichtsepg.c:49
++msgid "Step width (min)"
++msgstr "Aikasiirtymän pituus (min)"
++
++#: nordlichtsepg.c:50 nordlichtsepg.c:228 nordlichtsepg.c:236
++#: nordlichtsepg.c:244 nordlichtsepg.c:250 nordlichtsepg.c:292
++#: nordlichtsepg.c:325
++msgid "Jump to"
++msgstr "Pikavalinta kellonaikaan"
++
++#: nordlichtsepg.c:51
++msgid "Switch with Ok"
++msgstr "Vaihda kanavaa 'OK'-painikkeella"
++
++#: nordlichtsepg.c:52
++msgid "Appearance"
++msgstr "Ulkoasu"
++
++#: nordlichtsepg.c:53
++msgid "Hide main menu entry"
++msgstr "Piilota valinta päävalikosta"
++
++#: nordlichtsepg.c:54
++msgid "Keep display after switching"
++msgstr "Säilytä valikko kanavaa valittaessa"
++
++#: nordlichtsepg.c:55
++msgid "Show channel numbers"
++msgstr "Näytä kanavien numerointi"
++
++#: nordlichtsepg.c:56
++msgid "Show channel groups"
++msgstr "Näytä kanavaryhmät"
++
++#: nordlichtsepg.c:57
++msgid "Hide encrypted channels"
++msgstr "Piilota salatut kanavat"
++
++#: nordlichtsepg.c:58
++msgid "Hide radio channels"
++msgstr "Piilota radiokanavat"
++
++#: nordlichtsepg.c:59
++msgid "Is Enigma theme used"
++msgstr "Enigma-teema käytössä"
++
++#: nordlichtsepg.c:155 nordlichtsepg.c:271
++msgid "What's on now?"
++msgstr ""
++
++#: nordlichtsepg.c:158
++msgid "Button$Info"
++msgstr "Tiedot"
++
++#: nordlichtsepg.c:158 nordlichtsepg.c:160
++msgid "Button$Now"
++msgstr "Nyt"
+Index: nordlichtsepg-0.8a/po/nordlichtsepg.pot
+===================================================================
+--- nordlichtsepg-0.8a/po/nordlichtsepg.pot
++++ nordlichtsepg-0.8a/po/nordlichtsepg.pot	2008-04-24 21:29:46.000000000 +0300
+@@ -0,0 +1,121 @@
++# SOME DESCRIPTIVE TITLE.
++# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
++# This file is distributed under the same license as the PACKAGE package.
++# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
++#
++#, fuzzy
++msgid ""
++msgstr ""
++"Project-Id-Version: PACKAGE VERSION\n"
++"Report-Msgid-Bugs-To: http://qa.mandriva.com/\n"
++"POT-Creation-Date: 2008-04-24 21:29+0300\n"
++"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
++"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
++"Language-Team: LANGUAGE <LL@li.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=CHARSET\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: mymenuevent.c:11
++msgid "Event"
++msgstr ""
++
++#: mymenuevent.c:20 mymenuevent.c:84
++msgid "Button$Delete T."
++msgstr ""
++
++#: mymenuevent.c:20 mymenuevent.c:84
++msgid "Button$Edit T."
++msgstr ""
++
++#: mymenuevent.c:20 mymenuevent.c:22 mymenuevent.c:84 mymenuevent.c:108
++#: nordlichtsepg.c:160
++msgid "Button$Switch"
++msgstr ""
++
++#: mymenuevent.c:22 mymenuevent.c:108
++msgid "Button$Record"
++msgstr ""
++
++#: mymenuevent.c:35 mywhatsonitem.c:70 mywhatsonitem.c:72 mywhatsonitem.c:77
++#: mywhatsonitem.c:79
++msgid "no info"
++msgstr ""
++
++#: mymenuevent.c:43 nordlichtsepg.c:174
++msgid "Can't switch channel!"
++msgstr ""
++
++#: mymenuevent.c:92
++msgid "Delete timer?"
++msgstr ""
++
++#: mymenuevent.c:96
++msgid "Timer still recording - really delete?"
++msgstr ""
++
++#: nordlichtsepg.c:12
++msgid "Extended EPG"
++msgstr ""
++
++#: nordlichtsepg.c:13
++msgid "Nordlicht's EPG"
++msgstr ""
++
++#: nordlichtsepg.c:49
++msgid "Step width (min)"
++msgstr ""
++
++#: nordlichtsepg.c:50 nordlichtsepg.c:228 nordlichtsepg.c:236
++#: nordlichtsepg.c:244 nordlichtsepg.c:250 nordlichtsepg.c:292
++#: nordlichtsepg.c:325
++msgid "Jump to"
++msgstr ""
++
++#: nordlichtsepg.c:51
++msgid "Switch with Ok"
++msgstr ""
++
++#: nordlichtsepg.c:52
++msgid "Appearance"
++msgstr ""
++
++#: nordlichtsepg.c:53
++msgid "Hide main menu entry"
++msgstr ""
++
++#: nordlichtsepg.c:54
++msgid "Keep display after switching"
++msgstr ""
++
++#: nordlichtsepg.c:55
++msgid "Show channel numbers"
++msgstr ""
++
++#: nordlichtsepg.c:56
++msgid "Show channel groups"
++msgstr ""
++
++#: nordlichtsepg.c:57
++msgid "Hide encrypted channels"
++msgstr ""
++
++#: nordlichtsepg.c:58
++msgid "Hide radio channels"
++msgstr ""
++
++#: nordlichtsepg.c:59
++msgid "Is Enigma theme used"
++msgstr ""
++
++#: nordlichtsepg.c:155 nordlichtsepg.c:271
++msgid "What's on now?"
++msgstr ""
++
++#: nordlichtsepg.c:158
++msgid "Button$Info"
++msgstr ""
++
++#: nordlichtsepg.c:158 nordlichtsepg.c:160
++msgid "Button$Now"
++msgstr ""
