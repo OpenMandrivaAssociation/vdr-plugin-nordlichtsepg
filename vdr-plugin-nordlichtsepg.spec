@@ -2,7 +2,7 @@
 %define plugin	nordlichtsepg
 %define name	vdr-plugin-%plugin
 %define version	0.8a
-%define rel	17
+%define rel	18
 
 Summary:	VDR plugin: Extended EPG
 Name:		%name
@@ -14,7 +14,6 @@ URL:		http://martins-kabuff.de/nordlichtsepg.html
 Source:		http://martins-kabuff.de/download/vdr-%plugin-%version.tar.bz2
 Patch0:		91_nordlichtsepg-0.8a_vdr153.dpatch
 Patch1:		nordlichtsepg-0.8a-i18n-1.6.patch
-BuildRoot:	%{_tmppath}/%{name}-buildroot
 BuildRequires:	vdr-devel >= 1.6.0
 Requires:	vdr-abi = %vdr_abi
 
@@ -39,17 +38,7 @@ delete timers.
 %vdr_plugin_build
 
 %install
-rm -rf %{buildroot}
 %vdr_plugin_install
-
-%clean
-rm -rf %{buildroot}
-
-%post
-%vdr_plugin_post %plugin
-
-%postun
-%vdr_plugin_postun %plugin
 
 %files -f %plugin.vdr
 %defattr(-,root,root)
