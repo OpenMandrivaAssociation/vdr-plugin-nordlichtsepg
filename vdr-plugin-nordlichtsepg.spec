@@ -3,7 +3,7 @@
 Summary:	VDR plugin: Extended EPG
 Name:		vdr-plugin-%plugin
 Version:	0.8a
-Release:	19
+Release:	20
 Group:		Video
 License:	GPL
 URL:		http://martins-kabuff.de/nordlichtsepg.html
