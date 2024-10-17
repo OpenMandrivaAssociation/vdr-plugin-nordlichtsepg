@@ -6,7 +6,7 @@ Version:	0.8a
 Release:	20
 Group:		Video
 License:	GPL
-URL:		http://martins-kabuff.de/nordlichtsepg.html
+URL:		https://martins-kabuff.de/nordlichtsepg.html
 Source:		http://martins-kabuff.de/download/vdr-%plugin-%{version}.tar.bz2
 Patch0:		91_nordlichtsepg-0.8a_vdr153.dpatch
 Patch1:		nordlichtsepg-0.8a-i18n-1.6.patch
